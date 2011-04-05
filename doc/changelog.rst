@@ -6,7 +6,7 @@ Changes in Version 1.10
 
 Version 1.10 includes changes to support new features in MongoDB 1.8.x.
 Highlights include a modified map/reduce API including an inline map/reduce
-helper method, a new find_and_modify helper, and the ablilty to query the
+helper method, a new find_and_modify helper, and the ability to query the
 server for the maximum BSON document size it supports.
 
 - added :meth:`~pymongo.collection.Collection.find_and_modify`.
@@ -22,8 +22,10 @@ server for the maximum BSON document size it supports.
 Issues resolved
 ...............
 
+- PYTHON-225: :class:`pymongo.objectid.ObjectId` class definition should use __slots__.
 - PYTHON-223: Documentation fix.
 - PYTHON-220: Documentation fix.
+- PYTHON-219: KeyError in :meth:`~pymongo.collection.Collection.find_and_modify`
 - PYTHON-213: Query server for maximum BSON document size.
 - PYTHON-208: Fix :class:`pymongo.connection.Connection` __repr__.
 - PYTHON-207: Changes to Map/Reduce API.

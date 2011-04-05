@@ -196,9 +196,8 @@ class ObjectId(object):
     def __setstate__(self, value):
         """explicit state set from pickling
         """
-        # We need to make sure that we're backward compatible with pickled
-        # objects from pymongo v1.9.  Those come in with a dict from
-        # setstate.
+        # Provide backwards compatability with OIDs
+        # pickled with pymongo-1.9.
         if isinstance(value, dict):
             self.__id = value['_ObjectId__id']
         else:

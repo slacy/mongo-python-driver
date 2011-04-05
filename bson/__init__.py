@@ -147,7 +147,7 @@ def _get_date(data, as_class, tz_aware):
 
 def _get_code_w_scope(data, as_class, tz_aware):
     (_, data) = _get_int(data)
-    (code, data) = _get_string(data)
+    (code, data) = _get_string(data, as_class, tz_aware)
     (scope, data) = _get_object(data, as_class, tz_aware)
     return (Code(code, scope), data)
 
@@ -188,7 +188,8 @@ def _get_timestamp(data, as_class, tz_aware):
 
 
 def _get_long(data, as_class, tz_aware):
-    return (struct.unpack("<q", data[:8])[0], data[8:])
+    # Have to cast to long; on 32-bit unpack may return an int.
+    return (long(struct.unpack("<q", data[:8])[0]), data[8:])
 
 
 _element_getter = {
@@ -296,13 +297,18 @@ def _element_to_bson(key, value, check_keys):
         return "\x08" + name + "\x01"
     if value is False:
         return "\x08" + name + "\x00"
-    if isinstance(value, (int, long)):
+    if isinstance(value, int):
         # TODO this is a really ugly way to check for this...
         if value > 2 ** 64 / 2 - 1 or value < -2 ** 64 / 2:
             raise OverflowError("BSON can only handle up to 8-byte ints")
         if value > 2 ** 32 / 2 - 1 or value < -2 ** 32 / 2:
             return "\x12" + name + struct.pack("<q", value)
         return "\x10" + name + struct.pack("<i", value)
+    if isinstance(value, long):
+        # XXX No long type in Python 3
+        if value > 2 ** 64 / 2 - 1 or value < -2 ** 64 / 2:
+            raise OverflowError("BSON can only handle up to 8-byte ints")
+        return "\x12" + name + struct.pack("<q", value)
     if isinstance(value, datetime.datetime):
         if value.utcoffset() is not None:
             value = value - value.utcoffset()
